@@ -48,14 +48,18 @@ class Recommender:
         """
         새로운 크리에이터 데이터 전처리
         """
+        normalized_subscribers = self.loader.normalize_subscribers(
+            data['subscribers'], self.config['max_subscribers']
+        )
+
         data = {
             'creator_id': self.config['num_users'] - 1,  # 범위를 초과하지 않도록 수정
             'channel_category': self.loader.similarity_matrix.columns.tolist().index(data['channel_category']),
             'creator_embedding': torch.tensor(self.text_embedder.get_text_embedding(data['channel_name']), dtype=torch.float),
-            'subscribers': data['subscribers'],
+            'subscribers': normalized_subscribers,
             'item_category': 0,
             'media_type': 0,
-            'item_embedding': torch.zeros(768)
+            'item_embedding': torch.zeros(384)
         }
         return data
 
