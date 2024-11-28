@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from tqdm import tqdm
+# from tqdm import tqdm
 from tensorboardX import SummaryWriter
 from src.rec_system.method.utils import save_checkpoint, use_cpu, use_optimizer
 from src.rec_system.method.metrics import MetronAtK

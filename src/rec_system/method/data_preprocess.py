@@ -1,9 +1,5 @@
-import pickle
-from sklearn.model_selection import train_test_split
-from transformers import BertTokenizer, BertModel
 import torch
 import pandas as pd
-from sklearn.metrics.pairwise import cosine_similarity
 from torch.utils.data import Dataset
 import numpy as np
 from sentence_transformers import SentenceTransformer

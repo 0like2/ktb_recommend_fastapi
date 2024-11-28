@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import List
 
-
 class CreatorRecommendRequest(BaseModel):
     channel_name: str
     channel_category: str
