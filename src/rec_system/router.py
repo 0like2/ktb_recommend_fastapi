@@ -6,7 +6,7 @@ router = APIRouter()
 recommendation_service = RecommendationService()
 
 
-@router.post("/ai/recommend/item", response_model=CreatorRecommendResponse)
+@router.post("/rec/recommend/creator", response_model=CreatorRecommendResponse)
 def recommend_item(data: ItemRecommendRequest):
     try:
         recommendations = recommendation_service.recommend_for_new_item(data.dict())
@@ -16,7 +16,8 @@ def recommend_item(data: ItemRecommendRequest):
                     "creator_id": rec["creator_id"],
                     "channel_category": rec["channel_category"],
                     "channel_name": rec["channel_name"],
-                    "subscribers": int(rec["subscribers"].replace(",", ""))  # 문자열을 정수로 변환
+                    # 문자열을 정수로 변환
+                    "subscribers": int(rec["subscribers"].replace(",", ""))
                 }
                 for rec in recommendations
             ]
@@ -25,7 +26,7 @@ def recommend_item(data: ItemRecommendRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/ai/recommend/creator", response_model=ItemRecommendResponse)
+@router.post("/rec/recommend/item", response_model=ItemRecommendResponse)
 def recommend_creator(data: CreatorRecommendRequest):
     try:
         recommendations = recommendation_service.recommend_for_new_creator(data.dict())
