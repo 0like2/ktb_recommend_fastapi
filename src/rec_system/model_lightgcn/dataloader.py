@@ -5,9 +5,10 @@ from sklearn.preprocessing import MinMaxScaler
 import torch
 from torch.nn import Embedding
 from sentence_transformers import SentenceTransformer
-from model import to_sparse_tensor
-from world import cprint
+from src.rec_system.model_lightgcn.world import cprint
+
 import random
+
 
 class BasicDataset:
     def __init__(self):
@@ -59,14 +60,14 @@ class TextEmbedder:
 class SimilarityDataset(BasicDataset):
     def __init__(self, creator_file, item_file, similarity_matrix_file, config, threshold=0.05):
 
-        self.config=config
+        self.config = config
         self.similarity_matrix_file = similarity_matrix_file
-        cprint("Loading metadata and similarity matrix...")
         self.creators = pd.read_csv(creator_file)
         self.items = pd.read_csv(item_file)
 
         self.item_category_mapping = dict(enumerate(self.items['item_category'].astype("category").cat.categories))
-        self.channel_category_mapping = dict(enumerate(self.creators['channel_category'].astype("category").cat.categories))
+        self.channel_category_mapping = dict(
+            enumerate(self.creators['channel_category'].astype("category").cat.categories))
         self.media_type_mapping = {0: 'short', 1: 'long'}
 
         try:
@@ -144,9 +145,6 @@ class SimilarityDataset(BasicDataset):
         # 전체 그래프 결합
         graph = vstack([top, bottom])
 
-        print(f"[DEBUG] Final Graph Shape: {graph.shape}")
-        print(f"[DEBUG] Non-zero Entries (Final Graph): {graph.nnz}")
-
         return graph
 
     def __build_test(self, threshold=0.85):
@@ -200,8 +198,6 @@ class SimilarityDataset(BasicDataset):
                     user_item_graph[user_id, item_id] = similarity_score
 
         return csr_matrix(user_item_graph)
-
-
 
     def getSparseGraph(self):
         return self.graph

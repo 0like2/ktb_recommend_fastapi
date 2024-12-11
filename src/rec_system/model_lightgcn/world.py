@@ -2,93 +2,84 @@ import os
 from os.path import join
 import torch
 import multiprocessing
-from parse import parse_args
+import sys
+# Lazy initialization for configuration
+config = None  # Global config variable
+device = None
+CORES = None
 
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
-args = parse_args()
+def initialize_world():
 
-# Define paths
-ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
-INPUT_PATH = join(ROOT_PATH, 'input')
-OUTPUT_PATH = join(ROOT_PATH, 'output')
-BOARD_PATH = join(OUTPUT_PATH, 'runs')
-FILE_PATH = join(OUTPUT_PATH, 'checkpoints')
+    global config, device, CORES
+    if config is not None:  # Avoid reinitialization
+        return
 
+    from src.rec_system.model_lightgcn.parse import parse_args
 
-# Ensure necessary directories exist
-if not os.path.exists(FILE_PATH):
-    os.makedirs(FILE_PATH, exist_ok=True)
+    os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+    # Filter arguments for parse_args
+    filtered_args = [arg for arg in sys.argv if arg.startswith("--bpr_batch") or arg.startswith("--latent_dim")]
+    sys.argv = [sys.argv[0]] + filtered_args  # Reset sys.argv to only include valid args
 
-# Configuration dictionary
-config = {}
-all_datasets = ['lastfm', 'gowalla', 'yelp2018', 'amazon-book', 'custom-similarity']
-all_models = ['mf', 'lgn']
+    args = parse_args()
 
-# Basic configurations from args
-config['bpr_batch_size'] = args.bpr_batch
-config['latent_dim'] = args.latent_dim
-config['n_layers'] = args.n_layers
-config['dropout'] = args.dropout
-config['keep_prob'] = args.keepprob
-config['A_n_fold'] = args.a_fold
-config['test_u_batch_size'] = args.testbatch
-config['multicore'] = args.multicore
-config['lr'] = args.lr
-config['decay'] = args.decay
-config['pretrain'] = args.pretrain
-config['A_split'] = False  # Default setting
-config['bigdata'] = False  # Default setting
+    # Define paths
+    ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
+    INPUT_PATH = join(ROOT_PATH, 'input')
+    OUTPUT_PATH = join(ROOT_PATH, 'output')
+    BOARD_PATH = join(OUTPUT_PATH, 'runs')
+    FILE_PATH = join(OUTPUT_PATH, 'checkpoints')
 
-# 상대 경로를 활용해 파일 경로 설정
-config['creator_file'] = os.path.join(INPUT_PATH, 'Creator_random25.csv')
-config['item_file'] = os.path.join(INPUT_PATH, 'Item_random25.csv')
-config['similarity_matrix_file'] = os.path.join(INPUT_PATH, 'similarity_matrix.csv')
+    # Ensure necessary directories exist
+    if not os.path.exists(FILE_PATH):
+        os.makedirs(FILE_PATH, exist_ok=True)
 
-# Device configuration
-GPU = torch.cuda.is_available()
-device = torch.device('cuda' if GPU else 'cpu')
-CORES = multiprocessing.cpu_count() // 2  # Use half the available cores
-seed = args.seed  # Random seed for reproducibility
+    # Initialize config
+    config = {
+        'bpr_batch_size': args.bpr_batch,
+        'latent_dim': args.latent_dim,
+        'n_layers': args.n_layers,
+        'dropout': args.dropout,
+        'keep_prob': args.keepprob,
+        'A_n_fold': args.a_fold,
+        'test_u_batch_size': args.testbatch,
+        'multicore': args.multicore,
+        'lr': args.lr,
+        'decay': args.decay,
+        'pretrain': args.pretrain,
+        'A_split': False,
+        'bigdata': False,
+        'creator_file': os.path.join(INPUT_PATH, 'Creator_random25.csv'),
+        'item_file': os.path.join(INPUT_PATH, 'Item_random25.csv'),
+        'similarity_matrix_file': os.path.join(INPUT_PATH, 'similarity_matrix.csv'),
+        'dataset': args.dataset,
+        'model': args.model,
+        'train_epochs': args.epochs,
+        'load': args.load,
+        'path': args.path,
+        'topks': eval(args.topks),
+        'tensorboard': args.tensorboard,
+        'comment': args.comment,
+        'seed': args.seed,
+    }
 
-# Dataset and model settings
-dataset = args.dataset
-model_name = args.model
+    # Device configuration
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    CORES = multiprocessing.cpu_count() // 2  # Use half the available cores
 
-if dataset not in all_datasets:
-    raise ValueError(f"Dataset '{dataset}' not supported! Available datasets: {all_datasets}")
-if model_name not in all_models:
-    raise ValueError(f"Model '{model_name}' not supported! Available models: {all_models}")
+    # Dataset and model validation
+    all_datasets = ['lastfm', 'gowalla', 'yelp2018', 'amazon-book', 'custom-similarity']
+    all_models = ['mf', 'lgn']
 
-# Training and evaluation settings
-TRAIN_epochs = args.epochs
-LOAD = args.load
-PATH = args.path
-topks = eval(args.topks)  # Convert string "[20]" to list [20]
-tensorboard = args.tensorboard
-comment = args.comment
+    dataset = config['dataset']
+    model_name = config['model']
 
-# Suppress pandas warnings
-from warnings import simplefilter
-simplefilter(action="ignore", category=FutureWarning)
+    if dataset not in all_datasets:
+        raise ValueError(f"Dataset '{dataset}' not supported! Available datasets: {all_datasets}")
+    if model_name not in all_models:
+        raise ValueError(f"Model '{model_name}' not supported! Available models: {all_models}")
 
 
 # Utility function for colored print
 def cprint(words: str):
     print(f"\033[0;30;43m{words}\033[0m")
-
-
-# Optional logo for display
-logo = r"""
-██╗      ██████╗ ███╗   ██╗
-██║     ██╔════╝ ████╗  ██║
-██║     ██║  ███╗██╔██╗ ██║
-██║     ██║   ██║██║╚██╗██║
-███████╗╚██████╔╝██║ ╚████║
-╚══════╝ ╚═════╝ ╚═╝  ╚═══╝
-"""
-# Uncomment to display the logo
-# print(logo)
-
-print("Configuration:")
-for key, value in config.items():
-    print(f"{key}: {value}")

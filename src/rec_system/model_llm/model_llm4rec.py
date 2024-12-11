@@ -42,7 +42,6 @@ def setup_openai_api():
 def load_data(creator_path, item_path):
     creators = pd.read_csv(creator_path)
     items = pd.read_csv(item_path)
-    print("Creators and items data successfully loaded!")
     return creators, items
 
 
@@ -304,7 +303,7 @@ def rank_candidates_with_llm(new_data, ranked_candidates, connections, llm_ranke
             "creator_id": <id>,   
             "channel_category": "<category>", 
             "channel_name": "<name>",         
-            "subscribers": <score>            
+            "subscribers": <int>            
         }},
 
     ]  
@@ -365,7 +364,7 @@ def rank_candidates_with_llm(new_data, ranked_candidates, connections, llm_ranke
                     "creator_id": creator['creator_id'],
                     "channel_category": creator['channel_category'],
                     "channel_name": creator['channel_name'],
-                    "subscribers": creator['subscribers']
+                    "subscribers": int(creator['subscribers'])
                 })
             else:
                 print(f"Warning: No matching creator found for channel_name: {channel_name}")
@@ -419,7 +418,9 @@ def recommend_for_new_creator(new_creator_data, creators_df, items_df, embedder,
 def recommend_for_new_item(new_item_data, creators_df, items_df, embedder, connections, llm_ranker, top_k=10):
     print("\n--- Generating Candidates for New Item ---")
     candidates = generate_candidates(new_item_data, creators_df, items_df, embedder, connections, top_k, is_item=True)
+    print("DEBUG: Candidates generated:", candidates)
     ranked_candidates, id_map = llm_ranker.re_rank(new_item_data, candidates, connections, is_item=True)
+    print("DEBUG: Candidates ranked:", ranked_candidates)
     final_recommendations = rank_candidates_with_llm(
         new_item_data, ranked_candidates, connections, llm_ranker, id_map, is_item=True, top_k=top_k,
         creators_df=creators_df, items_df=items_df

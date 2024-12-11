@@ -5,7 +5,7 @@ import world
 import torch
 from torch import nn, optim
 import numpy as np
-from dataloader import BasicDataset
+from src.rec_system.model_lightgcn.dataloader import BasicDataset
 import os
 
 
@@ -50,9 +50,7 @@ def UniformSample_similarity_based(dataset):
     return np.array(S)
 
 
-
 def getFileName():
-
     if world.model_name == 'mf':
         file = f"mf-{world.dataset}-{world.config['latent_dim']}.pth.tar"
     elif world.model_name == 'lgn':
@@ -63,7 +61,6 @@ def getFileName():
 
 
 def set_seed(seed):
-
     np.random.seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
@@ -72,14 +69,12 @@ def set_seed(seed):
 
 
 def minibatch(*tensors, **kwargs):
-
     batch_size = kwargs.get('batch_size', world.config['bpr_batch_size'])
     for i in range(0, len(tensors[0]), batch_size):
         yield tuple(x[i:i + batch_size] for x in tensors)
 
 
 def shuffle(*arrays, **kwargs):
-
     shuffle_indices = np.arange(len(arrays[0]))
     np.random.shuffle(shuffle_indices)
     result = tuple(x[shuffle_indices] for x in arrays)
@@ -104,7 +99,6 @@ def RecallPrecision_ATk(test_data, r, k):
     return {'recall': recall, 'precision': precis}
 
 
-
 def NDCGatK_r(test_data, r, k):
     pred_data = r[:, :k]
     test_matrix = np.zeros((len(pred_data), k))
@@ -119,8 +113,8 @@ def NDCGatK_r(test_data, r, k):
     ndcg = dcg / idcg
     return np.sum(ndcg)
 
-def getLabel(test_data, pred_data):
 
+def getLabel(test_data, pred_data):
     r = []
     for groundTrue, predictTopK in zip(test_data, pred_data):
         pred = np.array([1.0 if x in groundTrue else 0.0 for x in predictTopK])

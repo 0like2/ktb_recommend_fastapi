@@ -1,9 +1,11 @@
 import torch
-from model import LightGCN
-from dataloader import SimilarityDataset
-import world
-import pandas as pd
-import numpy as np
+import warnings
+from src.rec_system.model_lightgcn import world
+from src.rec_system.model_lightgcn.model import LightGCN
+from src.rec_system.model_lightgcn.dataloader import SimilarityDataset
+
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 
 class LightGCNRecommender:
     def __init__(self, model_path, dataset):
@@ -140,7 +142,6 @@ class LightGCNRecommender:
             for i in top_k_indices
         ]
         return recommended_items
-
 
 
 if __name__ == "__main__":

@@ -1,12 +1,11 @@
 """
 Procedure for training and testing LightGCN with metadata and similarity-based graph.
 """
-import world
 import numpy as np
 import torch
-import utils
 from time import time
 import multiprocessing
+from rec_system.model_lightgcn import utils, world
 
 CORES = multiprocessing.cpu_count() // 2
 
@@ -45,7 +44,7 @@ def BPR_train(dataset, recommend_model, loss_class, epoch, neg_k=1, w=None):
 
     # Training in batches
     for batch_i, (batch_users, batch_pos, batch_neg) in enumerate(
-        utils.minibatch(users, posItems, negItems, batch_size=world.config['bpr_batch_size'])
+            utils.minibatch(users, posItems, negItems, batch_size=world.config['bpr_batch_size'])
     ):
         cri = bpr.stageOne(batch_users, batch_pos, batch_neg)
         average_loss += cri
@@ -55,7 +54,8 @@ def BPR_train(dataset, recommend_model, loss_class, epoch, neg_k=1, w=None):
     average_loss /= total_batch
     train_time = time() - start_time
 
-    print(f"[BPR Train] Epoch {epoch}, Loss: {average_loss:.4f}, Sample Time: {sample_time:.2f}s, Train Time: {train_time:.2f}s")
+    print(
+        f"[BPR Train] Epoch {epoch}, Loss: {average_loss:.4f}, Sample Time: {sample_time:.2f}s, Train Time: {train_time:.2f}s")
     return f"loss{average_loss:.3f}"
 
 

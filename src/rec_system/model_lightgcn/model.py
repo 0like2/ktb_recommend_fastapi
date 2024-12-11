@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
+
 def to_sparse_tensor(sparse_matrix):
     sparse_matrix = sparse_matrix.tocoo()
     indices = torch.from_numpy(
@@ -12,10 +13,12 @@ def to_sparse_tensor(sparse_matrix):
     shape = torch.Size(sparse_matrix.shape)
     return torch.sparse_coo_tensor(indices, values, shape)
 
+
 class Model(nn.Module):
     """
     Base class for all models. Defines the common interface.
     """
+
     def __init__(self, config, dataset):
         super(Model, self).__init__()
         self.config = config
@@ -35,6 +38,7 @@ class LightGCN(Model):
     """
     Implementation of LightGCN model with metadata and similarity-based graph.
     """
+
     def __init__(self, config, dataset):
         super(LightGCN, self).__init__(config, dataset)
 
