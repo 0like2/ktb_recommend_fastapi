@@ -3,15 +3,15 @@ from os.path import join
 import torch
 import multiprocessing
 import sys
-# Lazy initialization for configuration
-config = None  # Global config variable
+
+config = None
 device = None
 CORES = None
 
 def initialize_world():
 
     global config, device, CORES
-    if config is not None:  # Avoid reinitialization
+    if config is not None:
         return
 
     from src.rec_system.model_lightgcn.parse import parse_args
@@ -19,7 +19,7 @@ def initialize_world():
     os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
     # Filter arguments for parse_args
     filtered_args = [arg for arg in sys.argv if arg.startswith("--bpr_batch") or arg.startswith("--latent_dim")]
-    sys.argv = [sys.argv[0]] + filtered_args  # Reset sys.argv to only include valid args
+    sys.argv = [sys.argv[0]] + filtered_args
 
     args = parse_args()
 
