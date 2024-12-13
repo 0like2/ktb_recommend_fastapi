@@ -14,8 +14,6 @@ def is_item_data(data):
         return True
     elif "channel_category" in data and "channel_name" in data:
         return False
-    else:
-        raise ValueError("Invalid data format: Unable to determine if data is for an item or a user.")
 
 
 class TextEmbedder:
@@ -79,9 +77,6 @@ def candidates_with_graph(data, connections, creators_df, items_df, embedder, to
                 print("Creator Row for ID:", candidate['creator_id'], creator_row)
                 if not creator_row.empty:
                     candidate['channel_name'] = creator_row['channel_name'].values[0]
-                else:
-                    print(f"Warning: No matching creator found for ID: {candidate['creator_id']}")
-                    candidate['channel_name'] = "Unknown"
 
     else:  # 새로운 데이터가 'user'일 경우
         print("\nProcessing as user data...")
@@ -92,9 +87,6 @@ def candidates_with_graph(data, connections, creators_df, items_df, embedder, to
                 print("Item Row for ID:", candidate['item_id'], item_row)
                 if not item_row.empty:
                     candidate['title'] = item_row['title'].values[0]
-                else:
-                    print(f"Warning: No matching item found for ID: {candidate['item_id']}")
-                    candidate['title'] = "Unknown"
     return candidates
 
 
@@ -324,8 +316,6 @@ def rank_candidates_with_llm(new_data, ranked_candidates, connections, llm_ranke
 
     """
 
-    print("prompt", prompt)
-
     # LLM 호출
     messages = [
         SystemMessage(content="You are an assistant that ranks recommendation candidates."),
@@ -335,15 +325,11 @@ def rank_candidates_with_llm(new_data, ranked_candidates, connections, llm_ranke
 
     # JSON 추출 및 파싱
     try:
-        # JSON 배열 부분만 추출
         json_match = re.search(r"\[\s*{.*?}\s*\]", response.content.strip(), re.DOTALL)
-        if not json_match:
-            raise ValueError("JSON content not found in the LLM response.")
 
         json_content = json_match.group(0)
         recommendations = json.loads(json_content)
-        print("--- Parsed Recommendations ---")
-        print(recommendations)
+
 
     except Exception as e:
         print("Error parsing LLM response:", e)
@@ -366,8 +352,7 @@ def rank_candidates_with_llm(new_data, ranked_candidates, connections, llm_ranke
                     "channel_name": creator['channel_name'],
                     "subscribers": int(creator['subscribers'])
                 })
-            else:
-                print(f"Warning: No matching creator found for channel_name: {channel_name}")
+
         else:
             # title을 기준으로 items_df에서 데이터 매핑
             title = recommendation.get('title')
@@ -382,8 +367,6 @@ def rank_candidates_with_llm(new_data, ranked_candidates, connections, llm_ranke
                     "media_type": item['media_type'],
                     "item_content": item.get('item_content', "No content available")
                 })
-            else:
-                print(f"Warning: No matching item found for title: {title}")
 
     return final_recommendations
 
@@ -418,9 +401,7 @@ def recommend_for_new_creator(new_creator_data, creators_df, items_df, embedder,
 def recommend_for_new_item(new_item_data, creators_df, items_df, embedder, connections, llm_ranker, top_k=10):
     print("\n--- Generating Candidates for New Item ---")
     candidates = generate_candidates(new_item_data, creators_df, items_df, embedder, connections, top_k, is_item=True)
-    print("DEBUG: Candidates generated:", candidates)
     ranked_candidates, id_map = llm_ranker.re_rank(new_item_data, candidates, connections, is_item=True)
-    print("DEBUG: Candidates ranked:", ranked_candidates)
     final_recommendations = rank_candidates_with_llm(
         new_item_data, ranked_candidates, connections, llm_ranker, id_map, is_item=True, top_k=top_k,
         creators_df=creators_df, items_df=items_df

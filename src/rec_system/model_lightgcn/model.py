@@ -15,10 +15,6 @@ def to_sparse_tensor(sparse_matrix):
 
 
 class Model(nn.Module):
-    """
-    Base class for all models. Defines the common interface.
-    """
-
     def __init__(self, config, dataset):
         super(Model, self).__init__()
         self.config = config
@@ -35,9 +31,6 @@ class Model(nn.Module):
 
 
 class LightGCN(Model):
-    """
-    Implementation of LightGCN model with metadata and similarity-based graph.
-    """
 
     def __init__(self, config, dataset):
         super(LightGCN, self).__init__(config, dataset)

@@ -14,19 +14,14 @@ def BPR_train(dataset, recommend_model, loss_class, epoch, neg_k=1, w=None):
     """
     Trains LightGCN using BPR loss with similarity-based graph.
     """
-    print("[DEBUG] Starting BPR_train...")
     Recmodel = recommend_model
     Recmodel.train()
     bpr: utils.BPRLoss = loss_class
 
     # Sampling positive and negative examples
     start_time = time()
-    S = utils.UniformSample_similarity_based(dataset)  # Uniform sampling without threshold filtering
+    S = utils.UniformSample_similarity_based(dataset)
     sample_time = time() - start_time
-
-    if len(S) == 0 or S.ndim < 2:
-        print("[ERROR] Sampling returned empty or invalid results. Check the sampling logic.")
-        return
 
     users = torch.Tensor(S[:, 0]).long()
     posItems = torch.Tensor(S[:, 1]).long()

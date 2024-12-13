@@ -17,7 +17,7 @@ class RecommendationService:
         # NeuMF 모델 초기화
         self.neumf_recommender = Recommender(
             model_path="src/rec_system/model/output/neumf_factor8neg4_Epoch4_HR1.0000_NDCG1.0000.model",
-            config_path = "src/rec_system/model/output/config/config_epoch_4.pkl"
+            config_path="src/rec_system/model/output/config/config_epoch_4.pkl"
         )
 
         # LLM 모델 초기화
@@ -85,7 +85,6 @@ class RecommendationService:
     # LLM 추천 함수
     def recommend_for_new_item_llm(self, item_data):
         item_data = self._ensure_unique_id_llm(item_data, is_item=True)
-        print("DEBUG: LLM Recommendation started with item_data:", item_data) # 디버깅 -> 삭제
         try:
             results = recommend_for_new_item(
                 item_data,
@@ -96,10 +95,8 @@ class RecommendationService:
                 llm_ranker=self.llm_ranker,
                 top_k=10
             )
-            print("DEBUG: LLM Recommendation results:", results) # 디버깅 -> 삭제
             return results
         except Exception as e:
-            print("ERROR: LLM Recommendation failed with error:", e) # 디버깅 -> 삭제
             return []
 
     def recommend_for_new_creator_llm(self, creator_data):
@@ -117,11 +114,11 @@ class RecommendationService:
     # 앙상블 추천
     def recommend_for_new_item(self, item_data):
         neumf_results = self.recommend_for_new_item_neumf(item_data)
-        print("neumf_results:",neumf_results)
+        print("neumf_results:", neumf_results)
         lightgcn_results = self.recommend_for_new_item_lightgcn(item_data)
-        print("lightgcn_results:",lightgcn_results)
+        print("lightgcn_results:", lightgcn_results)
         llm_results = self.recommend_for_new_item_llm(item_data)
-        print("llm_results:",llm_results)
+        print("llm_results:", llm_results)
 
         final_results = self._weighted_ensemble(
             {"neumf": neumf_results, "lightgcn": lightgcn_results, "llm": llm_results}
@@ -130,11 +127,11 @@ class RecommendationService:
 
     def recommend_for_new_creator(self, creator_data):
         neumf_results = self.recommend_for_new_creator_neumf(creator_data)
-        print("neumf_results:",neumf_results)
+        print("neumf_results:", neumf_results)
         lightgcn_results = self.recommend_for_new_creator_lightgcn(creator_data)
-        print("lightgcn_results:",lightgcn_results)
+        print("lightgcn_results:", lightgcn_results)
         llm_results = self.recommend_for_new_creator_llm(creator_data)
-        print("llm_results:",llm_results)
+        print("llm_results:", llm_results)
 
         final_results = self._weighted_ensemble(
             {"neumf": neumf_results, "lightgcn": lightgcn_results, "llm": llm_results}
@@ -143,20 +140,16 @@ class RecommendationService:
 
     # 가중치 기반 앙상블 로직
     def _weighted_ensemble(self, model_results):
-        """
-        모델별 추천 결과를 가중치 기반으로 앙상블.
-        """
         aggregated_results = {}
 
-        # 모델별 결과와 가중치 처리
         for model_name, results in model_results.items():
-            weight = self.model_weights.get(model_name, 1.0)  # 가중치 기본값은 1.0
+            weight = self.model_weights.get(model_name, 1.0)
             for rec in results:
                 rec_id = rec['creator_id'] if 'creator_id' in rec else rec['item_id']
                 if rec_id not in aggregated_results:
                     aggregated_results[rec_id] = {
                         **rec,
-                        "score": weight  # 초기 점수는 가중치로 설정
+                        "score": weight
                     }
                 else:
                     aggregated_results[rec_id]["score"] += weight  # 가중치 누적

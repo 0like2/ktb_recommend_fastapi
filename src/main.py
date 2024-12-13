@@ -1,4 +1,3 @@
-from config import settings
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from starlette import status

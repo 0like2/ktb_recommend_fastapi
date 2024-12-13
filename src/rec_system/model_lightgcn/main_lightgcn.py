@@ -36,7 +36,7 @@ print(f"Model embedding file path: {embedding_file}")
 
 # 모델 로드
 if world.LOAD:
-    try:
+
         Recmodel.load_model(weight_file, embedding_file)
         cprint(f"Loaded model weights and embeddings from {weight_file} and {embedding_file}")
     except FileNotFoundError:

@@ -11,8 +11,6 @@ if world.dataset == 'custom-similarity':
         similarity_matrix_file=world.config['similarity_matrix_file'],
         config=world.config
     )
-    print(
-        f"Dataset initialized: {type(dataset)} with {len(dataset.creators)} creators and {len(dataset.items)} items.")  # 디버깅 -> 삭제
 else:
     raise ValueError(f"Unknown dataset: {world.dataset}")
 
@@ -44,4 +42,3 @@ else:
 
 Recmodel = MODELS[world.model_name](world.config, dataset)
 Recmodel = Recmodel.to(world.device)
-print(f"Model initialized: {type(Recmodel)} on device {world.device}")  # 디버깅 -> 삭제

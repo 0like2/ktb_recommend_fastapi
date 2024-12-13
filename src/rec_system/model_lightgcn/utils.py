@@ -25,7 +25,7 @@ class BPRLoss:
         loss.backward(retain_graph=True)
         self.opt.step()
 
-        print(f"[DEBUG] Total Loss (with Regularization): {loss.item()}")
+        print(f" Total Loss (with Regularization): {loss.item()}")
         return loss.cpu().item()
 
 
@@ -82,10 +82,6 @@ def shuffle(*arrays, **kwargs):
 
 
 def RecallPrecision_ATk(test_data, r, k):
-    # Test Data 디버깅
-    if not test_data:
-        print("[ERROR] Test data is empty. Ensure `testDict` is populated correctly.")
-        return {'recall': np.nan, 'precision': 0}
 
     right_pred = r[:, :k].sum(1)
     precis_n = k

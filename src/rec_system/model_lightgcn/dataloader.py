@@ -48,13 +48,7 @@ class TextEmbedder:
         self.model = SentenceTransformer(model_name)
 
     def get_text_embedding(self, text):
-        if not text or text.strip() == "":  # Handle empty or None strings
-            return np.zeros(384)  # Default embedding size
-        try:
-            return self.model.encode(text)
-        except Exception as e:
-            print(f"Error encoding text '{text}': {e}")
-            return np.zeros(384)  # Return zero vector on failure
+        return self.model.encode(text)
 
 
 class SimilarityDataset(BasicDataset):
@@ -70,14 +64,8 @@ class SimilarityDataset(BasicDataset):
             enumerate(self.creators['channel_category'].astype("category").cat.categories))
         self.media_type_mapping = {0: 'short', 1: 'long'}
 
-        try:
-            self._similarity_matrix = pd.read_csv(similarity_matrix_file, index_col=0).values
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Could not find file: {similarity_matrix_file}")
-        except Exception as e:
-            raise ValueError(f"Error reading similarity matrix file: {e}")
+        self._similarity_matrix = pd.read_csv(similarity_matrix_file, index_col=0).values
 
-        # Metadata preprocessing
         self.scaler = MinMaxScaler()
         self.text_embedder = TextEmbedder()
         self.category_embedding_layer = Embedding(num_embeddings=100, embedding_dim=16)
@@ -123,8 +111,6 @@ class SimilarityDataset(BasicDataset):
         normalized = np.round((subscribers / max_value) * scale).astype(int)
         return np.clip(normalized, 0, scale)
 
-    from scipy.sparse import csr_matrix, vstack, hstack
-
     def _build_graph(self):
         n_users = self.n_users
         m_items = self.m_items
@@ -132,9 +118,7 @@ class SimilarityDataset(BasicDataset):
         # 사용자-아이템 관계 그래프 생성
         user_item_graph = self._build_user_item_graph()
 
-        # 사용자-사용자 연결 (빈 행렬)
         user_user_graph = csr_matrix((n_users, n_users))
-        # 아이템-아이템 연결 (빈 행렬)
         item_item_graph = csr_matrix((m_items, m_items))
 
         # 상단 행렬 (사용자-사용자 | 사용자-아이템)
@@ -168,9 +152,8 @@ class SimilarityDataset(BasicDataset):
             # Add fallback logic to ensure test_items is not empty
             if not test_items:
                 remaining_items = list(set(range(self.m_items)) - train_items)
-                test_items = random.sample(remaining_items, min(len(remaining_items), 5))  # Fallback to random sampling
+                test_items = random.sample(remaining_items, min(len(remaining_items), 5))
 
-            # Save to test_data
             test_data[user_id] = test_items
 
         return test_data
@@ -183,17 +166,12 @@ class SimilarityDataset(BasicDataset):
         user_item_graph = np.zeros((n_users, m_items))
 
         for user_id, user_data in enumerate(self.creators.itertuples()):
-            # user_id로부터 user_category 가져오기
             user_category = user_data.channel_category
 
             for item_id, item_data in enumerate(self.items.itertuples()):
-                # item_id로부터 item_category 가져오기
                 item_category = item_data.item_category
-
-                # similarity_matrix에서 user_category와 item_category 간 유사도 가져오기
                 similarity_score = self.similarity_matrix[user_category, item_category]
 
-                # 유사도가 0보다 큰 경우 그래프에 추가
                 if similarity_score > 0:
                     user_item_graph[user_id, item_id] = similarity_score
 
@@ -223,9 +201,6 @@ class SimilarityDataset(BasicDataset):
         }
 
     def get_creator_item_data(self):
-        """
-        Returns raw creator and item data.
-        """
         return self.creators, self.items
 
     @property
@@ -257,11 +232,11 @@ class SimilarityDataset(BasicDataset):
         all_neg = {user: [] for user in range(self.n_users)}
 
         for user_id in range(self.n_users):
-            user_category = self.creators.iloc[user_id]['channel_category']  # 유저 카테고리 가져오기
+            user_category = self.creators.iloc[user_id]['channel_category']
             neg_items = []
 
             for item_id in range(self.m_items):
-                item_category = self.items.iloc[item_id]['item_category']  # 아이템 카테고리 가져오기
+                item_category = self.items.iloc[item_id]['item_category']
 
                 # similarity_matrix에서 유저-아이템 간 유사도 가져오기
                 similarity_score = self.similarity_matrix[user_category, item_category]

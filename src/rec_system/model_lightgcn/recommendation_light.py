@@ -35,11 +35,6 @@ class LightGCNRecommender:
         """
         item_category = item_data.get('item_category', 'unknown')
 
-        # 카테고리 검증 및 매핑
-        if item_category not in self.item_category_mapping.values():
-            raise ValueError(
-                f"Unknown item category: {item_category}. Valid categories: {list(self.item_category_mapping.values())}")
-
         # 매핑된 카테고리 인덱스 가져오기
         category_index = list(self.item_category_mapping.values()).index(item_category)
         media_type = 0 if item_data.get('media_type', '').lower() == 'short' else 1
@@ -64,11 +59,6 @@ class LightGCNRecommender:
         Preprocess new creator data for recommendation.
         """
         channel_category = creator_data.get('channel_category', 'unknown')
-
-        # 카테고리 검증 및 매핑
-        if channel_category not in self.channel_category_mapping.values():
-            raise ValueError(
-                f"Unknown channel category: {channel_category}. Valid categories: {list(self.channel_category_mapping.values())}")
 
         # 매핑된 카테고리 인덱스 가져오기
         category_index = list(self.channel_category_mapping.values()).index(channel_category)

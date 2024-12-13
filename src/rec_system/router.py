@@ -27,7 +27,8 @@ def recommend_item(data: ItemRecommendRequest):
                     "channel_category": rec["channel_category"],
                     "channel_name": rec["channel_name"],
                     "subscribers": (
-                        int(rec["subscribers"].replace(",", "")) if isinstance(rec["subscribers"], str) else rec["subscribers"]
+                        int(rec["subscribers"].replace(",", "")) if isinstance(rec["subscribers"], str) else rec[
+                            "subscribers"]
                     )
                 }
                 for rec in recommendations

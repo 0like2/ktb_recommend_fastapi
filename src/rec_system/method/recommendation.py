@@ -30,31 +30,28 @@ class Recommender:
         self.user_metadata = self.loader.load_user_metadata()
         self.item_metadata = self.loader.load_item_metadata()
 
+    # 새로운 아이템 데이터 전처리
     def preprocess_new_item(self, data):
-        """
-        새로운 아이템 데이터 전처리
-        """
+
         data = {
-            'item_id': self.config['num_items'] - 1,  # 범위를 초과하지 않도록 수정
+            'item_id': self.config['num_items'] - 1,
             'item_category': self.loader.similarity_matrix.columns.tolist().index(data['item_category']),
             'media_type': 0 if 'short' in data['media_type'].lower() else 1,
             'item_embedding': torch.tensor(self.text_embedder.get_text_embedding(data['title']), dtype=torch.float),
-            'subscribers': 0,  # 아이템에 대해서는 구독자 수를 0으로 설정
-            'channel_category': 0,  # 기본 채널 카테고리 값
-            'creator_embedding': torch.zeros(768)  # BERT 임베딩 차원이 768이라고 가정
+            'subscribers': 0,
+            'channel_category': 0,
+            'creator_embedding': torch.zeros(768)
         }
         return data
 
+    # 새로운 크리에이터 전처리
     def preprocess_new_creator(self, data):
-        """
-        새로운 크리에이터 데이터 전처리
-        """
         normalized_subscribers = self.loader.normalize_subscribers(
             data['subscribers'], self.config['max_subscribers']
         )
 
         data = {
-            'creator_id': self.config['num_users'] - 1,  # 범위를 초과하지 않도록 수정
+            'creator_id': self.config['num_users'] - 1,
             'channel_category': self.loader.similarity_matrix.columns.tolist().index(data['channel_category']),
             'creator_embedding': torch.tensor(self.text_embedder.get_text_embedding(data['channel_name']),
                                               dtype=torch.float),
@@ -65,10 +62,8 @@ class Recommender:
         }
         return data
 
+    # 새로운 아이템 데이터에 대해 사용자 추천
     def recommend_for_new_item(self, item_data, top_k=10):
-        """
-        새로운 아이템 데이터에 대해 사용자 추천
-        """
         item_data = self.preprocess_new_item(item_data)
         user_ids_tensor = torch.arange(self.config['num_users'], dtype=torch.long).to(self.device)
         item_id_tensor = torch.tensor([item_data['item_id']], dtype=torch.long).to(self.device)
@@ -93,12 +88,11 @@ class Recommender:
         top_k_indices = scores.argsort()[-top_k:][::-1].copy()
         recommended_user_ids = user_ids_tensor[top_k_indices].cpu().numpy()
 
-        # 사용자 메타데이터에서 추천된 사용자 정보를 가져옴
         recommended_creator_data = []
         for user_id in recommended_user_ids:
             user_metadata = self.user_metadata[user_id]
             recommended_creator_data.append({
-                'creator_id': int(user_id)+1,
+                'creator_id': int(user_id) + 1,
                 'channel_category': user_metadata['channel_category'],
                 'channel_name': user_metadata['channel_name'],
                 'subscribers': user_metadata['subscribers']
@@ -106,13 +100,10 @@ class Recommender:
 
         return recommended_creator_data
 
+    # 새로운 크리에이터 데이터에 대해 아이템 추천
     def recommend_for_new_creator(self, creator_data, top_k=10):
-        """
-        새로운 크리에이터 데이터에 대해 아이템 추천
-        """
         creator_data = self.preprocess_new_creator(creator_data)
 
-        # channel_category 범위 초과 값 처리
         max_channel_category = self.config['num_channel_categories'] - 1
         creator_data['channel_category'] = min(creator_data['channel_category'], max_channel_category)
 
@@ -137,12 +128,11 @@ class Recommender:
         top_k_indices = scores.argsort()[-top_k:][::-1].copy()
         recommended_items = item_ids_tensor[top_k_indices].cpu().numpy()
 
-        # 아이템 메타데이터에서 추천된 아이템 정보를 가져옴
         recommended_item_data = []
         for item_id in recommended_items:
             item_metadata = self.item_metadata[item_id]
             recommended_item_data.append({
-                'item_id': int(item_id)+1,
+                'item_id': int(item_id) + 1,
                 'title': item_metadata['title'],
                 'item_category': item_metadata['item_category'],
                 'media_type': item_metadata['media_type'],
