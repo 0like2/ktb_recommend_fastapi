@@ -1,6 +1,3 @@
-"""
-Procedure for training and testing LightGCN with metadata and similarity-based graph.
-"""
 import numpy as np
 import torch
 from time import time
