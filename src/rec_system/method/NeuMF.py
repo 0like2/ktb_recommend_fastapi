@@ -61,12 +61,10 @@ class NeuMF(torch.nn.Module):
 
         # MLP 벡터
         mlp_vector = torch.cat([user_embedding_mlp, item_embedding_mlp, item_category_embedding, media_type_embedding,
-                               channel_category_embedding, subscribers_embedding], dim=-1)
+                                channel_category_embedding, subscribers_embedding], dim=-1)
 
-        # GMF 벡터 (내적)
         mf_vector = torch.mul(user_embedding_mf, item_embedding_mf)
 
-        # MLP 레이어
         for idx in range(len(self.fc_layers)):
             mlp_vector = self.fc_layers[idx](mlp_vector)
             mlp_vector = torch.nn.ReLU()(mlp_vector)
@@ -81,7 +79,6 @@ class NeuMF(torch.nn.Module):
         pass
 
     def load_pretrain_weights(self):
-        """Loading weights from trained MLP model & GMF model"""
         config = self.config
         config['latent_dim'] = config['latent_dim_mlp']
         mlp_model = MLP(config)
@@ -102,12 +99,12 @@ class NeuMF(torch.nn.Module):
         self.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.data
         self.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.data
 
-        self.affine_output.weight.data = 0.5 * torch.cat([mlp_model.affine_output.weight.data, gmf_model.affine_output.weight.data], dim=-1)
+        self.affine_output.weight.data = 0.5 * torch.cat(
+            [mlp_model.affine_output.weight.data, gmf_model.affine_output.weight.data], dim=-1)
         self.affine_output.bias.data = 0.5 * (mlp_model.affine_output.bias.data + gmf_model.affine_output.bias.data)
 
 
 class NeuMFEngine(Engine):
-    """Engine for training & evaluating NeuMF model"""
     def __init__(self, config):
         self.model = NeuMF(config)
         self.model.to(use_cpu())
@@ -134,7 +131,6 @@ class NeuMFEngine(Engine):
                                                  subscribers)
             print(f'[Training Epoch {epoch_id}] Batch {batch_id}, Loss {loss}')
             total_loss += loss
-
 
         self._writer.add_scalar('model/loss', total_loss, epoch_id)
 

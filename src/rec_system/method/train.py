@@ -1,7 +1,5 @@
 import os
-import torch
 import pickle
-import pandas as pd
 from torch.utils.data import DataLoader
 from src.rec_system.method.gmf import GMFEngine
 from src.rec_system.method.mlp import MLPEngine
@@ -70,20 +68,12 @@ similarity_matrix_file = 'similarity_matrix.csv'
 loader = Loader(file_path, similarity_matrix_file)
 train_dataset = loader.load_dataset()
 
-
-# 디버깅: 데이터셋 확인 -> 삭제 필요
-if train_dataset is None:
-    raise ValueError("train_dataset is None. Check Loader.load_dataset().")
-
-print(f"Train dataset loaded successfully: {len(train_dataset)} samples")
-
-
-# 데이터셋 정보 기반으로 config 업데이트
+# 데이터셋 정보 기반 config 업데이트
 common_config_updates = {
     'num_users': loader.num_users,
     'num_items': loader.num_items,
-    'num_item_categories': loader.num_item_categories,  # 아이템 카테고리 수
-    'num_channel_categories': loader.num_channel_categories,  # 채널 카테고리 수
+    'num_item_categories': loader.num_item_categories,
+    'num_channel_categories': loader.num_channel_categories,
     'meta_latent_dim': 4,  # 메타데이터 임베딩 차원
     'max_subscribers': 101  # 구독자 수의 최대값
 }
@@ -96,13 +86,8 @@ neumf_config.update(common_config_updates)
 # DataLoader 생성
 train_loader = DataLoader(train_dataset, batch_size=neumf_config['batch_size'], shuffle=True)
 
-# 데이터 디버깅: 구독자 값 확인 -> 삭제 필요
-for batch in train_loader:
-    print(f"Subscribers in batch: {batch['subscribers']}")  # 정규화된 구독자 값
-    break
-
 # 모델 선택
-model_type = 'NeuMF'  # 'GMF', 'MLP', 'NeuMF' 중 하나 선택
+model_type = 'NeuMF'
 
 if model_type == 'GMF':
     engine = GMFEngine(gmf_config)
@@ -141,7 +126,6 @@ for epoch in range(engine.config['num_epoch']):
 
     engine.save(engine.config['alias'], epoch, hit_ratio, ndcg)
 
-    # Config 저장 (pickle 사용)
     config_path = os.path.join(config_dir, f"config_epoch_{epoch}.pkl")
     with open(config_path, "wb") as f:
         pickle.dump(engine.config, f)
