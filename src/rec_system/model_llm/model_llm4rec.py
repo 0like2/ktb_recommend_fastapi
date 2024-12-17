@@ -350,7 +350,7 @@ def rank_candidates_with_llm(new_data, ranked_candidates, connections, llm_ranke
                     "creator_id": creator['creator_id'],
                     "channel_category": creator['channel_category'],
                     "channel_name": creator['channel_name'],
-                    "subscribers": int(creator['subscribers'])
+                    "subscribers": creator['subscribers']
                 })
 
         else:
@@ -449,7 +449,7 @@ def main():
     new_item_data = {
         'title': "바밤바를 뛰어넘는 밤 맛 과자가 있을까?",
         'item_category': 'entertainment',
-        'media_type': 'short',
+        'media_type': 'short_form',
         'score': 80,
         'item_content': '다양한 밤 맛 과자를 비교하며 맛과 질감을 리뷰하는 콘텐츠'
     }

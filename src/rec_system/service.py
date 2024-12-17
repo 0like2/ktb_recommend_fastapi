@@ -26,16 +26,14 @@ class RecommendationService:
         if not api_key:
             raise ValueError("Error: OPENAI_API_KEY not found. Please set the API key in your environment.")
         self.api_key = api_key
-
         self.embedder = TextEmbedder(api_key=self.api_key, model_name="text-embedding-3-small")
         creator_path_llm = "src/rec_system/model_lightgcn/input/Creator_random25.csv"
         item_path_llm = "src/rec_system/model_lightgcn/input/Item_random25.csv"
         self.creators_df, self.items_df = load_data(creator_path_llm, item_path_llm)
         self.connections = generate_graph(self.creators_df, self.items_df, self.embedder)
-        self.llm_ranker = LLMCandidateRanker(api_key=self.api_key, model_name="gpt-4", temperature=0.7)
+        self.llm_ranker = LLMCandidateRanker(api_key=self.api_key, model_name="gpt-4", temperature=0.5)
 
         # LightGCN 모델 초기화
-
         model_path_light = "src/rec_system/model_lightgcn/output/checkpoints/lgn-custom-similarity-3-64.pth.tar"
         creator_file_light = world.config['creator_file']
         item_file_light = world.config['item_file']
@@ -85,19 +83,15 @@ class RecommendationService:
     # LLM 추천 함수
     def recommend_for_new_item_llm(self, item_data):
         item_data = self._ensure_unique_id_llm(item_data, is_item=True)
-        try:
-            results = recommend_for_new_item(
-                item_data,
-                creators_df=self.creators_df,
-                items_df=self.items_df,
-                embedder=self.embedder,
-                connections=self.connections,
-                llm_ranker=self.llm_ranker,
-                top_k=10
-            )
-            return results
-        except Exception as e:
-            return []
+        return recommend_for_new_item(
+            item_data,
+            creators_df=self.creators_df,
+            items_df=self.items_df,
+            embedder=self.embedder,
+            connections=self.connections,
+            llm_ranker=self.llm_ranker,
+            top_k=10
+        )
 
     def recommend_for_new_creator_llm(self, creator_data):
         creator_data = self._ensure_unique_id_llm(creator_data, is_item=False)
@@ -140,23 +134,26 @@ class RecommendationService:
 
     # 가중치 기반 앙상블 로직
     def _weighted_ensemble(self, model_results):
-        aggregated_results = {}
+        aggregated_scores = {}
+        num_results = max(len(results) for results in model_results.values())
 
         for model_name, results in model_results.items():
             weight = self.model_weights.get(model_name, 1.0)
-            for rec in results:
-                rec_id = rec['creator_id'] if 'creator_id' in rec else rec['item_id']
-                if rec_id not in aggregated_results:
-                    aggregated_results[rec_id] = {
+            for rank, rec in enumerate(results, start=1):
+                rec_id = rec.get('creator_id', rec.get('item_id'))
+
+                rank_score = (num_results - rank + 1) * weight
+
+                if rec_id not in aggregated_scores:
+                    aggregated_scores[rec_id] = {
                         **rec,
-                        "score": weight
+                        "score": rank_score
                     }
                 else:
-                    aggregated_results[rec_id]["score"] += weight  # 가중치 누적
+                    aggregated_scores[rec_id]["score"] += rank_score
 
-        # 점수를 기준으로 정렬
         sorted_results = sorted(
-            aggregated_results.values(),
+            aggregated_scores.values(),
             key=lambda x: x["score"],
             reverse=True
         )

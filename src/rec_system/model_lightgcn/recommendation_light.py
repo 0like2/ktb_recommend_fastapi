@@ -99,7 +99,7 @@ class LightGCNRecommender:
         # Retrieve recommended user metadata
         recommended_users = [
             {
-                'creator_id': int(i),
+                'creator_id': int(i)+1,
                 'channel_name': self.dataset.creators.iloc[i]['channel_name'],
                 'channel_category': self.dataset.channel_category_mapping[
                     self.dataset.creators.iloc[i]['channel_category']],
@@ -122,7 +122,7 @@ class LightGCNRecommender:
         # Retrieve recommended item metadata
         recommended_items = [
             {
-                'item_id': int(i),
+                'item_id': int(i)+1,
                 'title': self.dataset.items.iloc[i]['title'],
                 'item_category': self.dataset.item_category_mapping[self.dataset.items.iloc[i]['item_category']],
                 'media_type': self.dataset.media_type_mapping[self.dataset.items.iloc[i]['media_type']],
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     new_item_data = {
         'title': "바밤바를 뛰어넘는 밤 맛 과자가 있을까?",
         'item_category': "entertainment",
-        'media_type': 'short',
+        'media_type': 'short-form',
         'score': 80,
         'item_content': '다양한 밤 맛 과자를 비교하며 맛과 질감을 리뷰하는 콘텐츠'
     }

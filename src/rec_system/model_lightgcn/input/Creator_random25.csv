@@ -1,26 +1,201 @@
 creator_id,channel_category,channel_name,subscribers
-1,game,로빈,438000
-2,game,괴물쥐 유튜브,1160000
-3,sports_health,김종국 GYMJONGKOOK,3080000
-4,sports_health,슛포러브,165000
-5,news,빨간아재,702000
-6,government,용혜인,333000
-7,tech,코딩애플,320000
-8,life_style,루아 LuaDoll,3060000
-9,entertainment,DJ SODA OFFICIAL,1820000
-10,entertainment,자이언트 펭 TV,1760000
-11,life_style,백종원 PAIK JONG WON,6660000
-12,life_style,tzuyang쯔양,1100000
-13,entertainment,보겸 TV,1310000
-14,movie,GH'S,2330000
-15,car_auto,전설입장권,1250000
-16,government,슈카월드,3430000
-17,entertainment,차린건 쥐뿔도 없지만,3950000
-18,pet,강형욱의 보듬 TV,2110000
-19,tech,안될과학 Unrealscience ,1220000
-20,travel,계곡은개골개골,431000
-21,travel,미니멀유목민,282000
-22,music,BLACKPINK,"95,100,000"
-23,pet,[THE SOY]루퐁이네,227000
-24,life_style,승비니 Seungbini,2550000
-25,education,EBSDocumentary(EBS 다큐),4450000
+1,game,무지개맛 Rainbow Flavor,463000
+2,game,전쓰트의 게임 채널 Junsst,577000
+3,game,악동 김블루,1970000
+4,game,문호준,574000
+5,game,재넌Jaenune,1080000
+6,game,T1 Faker,1890000
+7,game,프로관전러 P.S,520000
+8,game,중년게이머 김실장,406000
+9,game,대도서관TV (buzzbean11),1470000
+10,game,보겸TV,12700000
+11,game,테스터훈 TesterHoon,1380000
+12,game,백크 Baekk,782000
+13,game,[꿀템TV] 클템 유튜브,416000
+14,game,풍월량,511000
+15,game,김성회의 G식백과,923000
+16,travel,곽튜브,2070000
+17,travel,푸디랜드 FoodieLand,2160000
+18,travel,빠니보틀 Pani Bottle,2370000
+19,travel,쏘이Soy The World,639000
+20,travel,wineking 와인킹,645000
+21,travel,유일랜드 Uiland,251000
+22,travel,가보까 Gabokka,255000
+23,travel,신또 Sintto,256000
+24,travel,킴스트래블 Kim's Travel,260000
+25,travel,정샤크,289000
+26,travel,최준영 박사의 지구본 연구소,525000
+27,pet,왕탱이,29100
+28,pet,Solla Sound Sistem,29700
+29,pet,뽀송뽀송 bbosong,30000
+30,pet,강형욱의 보듬TV,2110000
+31,pet,밀키복이탄이MilkyBokiTan,2220000
+32,pet,[THE SOY]루퐁이네,2270000
+33,pet,스튜디오 그냥,3740000
+34,pet,해수인tv yellow aquarium,1110000
+35,pet,집사인생 용시쿠,302000
+36,pet,정브르,1400000
+37,pet,다흑,933000
+38,pet,시바견 곰이탱이여우 Shiba GTY,768000
+39,sports_health,피지컬갤러리,3130000
+40,sports_health,김종국 GYM JONG KOOK,3080000
+41,sports_health,1분요리 뚝딱이형,2930000
+42,sports_health,꽉잡아윤기-Kwakyoongy,978000
+43,sports_health,흑자헬스 SurplusHealth,830000
+44,sports_health,축구리즈(Soccer Leeds),115
+45,sports_health,물리치료사.PT재석,531000
+46,sports_health,세계적으로 유명한 운동 정보,524000
+47,sports_health,골프존,520000
+48,sports_health,하승진 HASEUNGJIN,460000
+49,tech,ITSub잇섭,2610000
+50,tech,안될과학 Unrealscience,1220000
+51,tech,과학드림 [Science Dream],1070000
+52,tech,1분과학,898000
+53,tech,서울리안 SEOULiAN,869000
+54,tech,조코딩 JoCoding,623000
+55,tech,뻘짓연구소,445000
+56,tech,발명킹밥테일,390000
+57,tech,방구석 리뷰룸,289000
+58,tech,최마태의 POST IT,263000
+59,tech,코딩하는거니,163000
+60,tech,탑사이언스,161000
+61,tech,TAE태영작가,90800
+62,music,1MILLION Dance Studio,26300000
+63,music,새송 Saesong,2810000
+64,music,창현거리노래방 Korea amazing street performers,2320000
+65,music,때껄룩ᴛᴀᴋᴇ ᴀ ʟᴏᴏᴋ,1930000
+66,music,때잉,1590000
+67,music,리플레이LEEPLAY,865000
+68,music,아이키 AIKI,803000
+69,music,네고막을책임져도될까,790000
+70,music,소울뮤직TV,596000
+71,music,Music is my life,506000
+72,music,김광연,378000
+73,music,뮤직월드 Music World,446000
+74,kids,DONA 도나,33100000
+75,kids,Boram Tube Vlog [보람튜브 브이로그],30900000
+76,kids,ToyPuddingTV,27300000
+77,kids,With Kids[위드키즈],17700000
+78,kids,BIBO와 장난감,14700000
+79,kids,Boram Tube ToysReview [보람튜브 토이리뷰],14600000
+80,kids,깨비키즈 [KEBIKIDS],4090000
+81,kids,헤이지니 Hey Jini,4060000
+82,kids,유라야놀자(Let's play YURA),2200000
+83,kids,캐리TV 장난감친구들,2060000
+84,kids,슈슈 브이로그 Shushu Vlog,850000
+85,kids,사랑아놀자(Let's Play SARANG),821000
+86,kids,파파네가족,559000
+87,kids,캐리TV 주니어,554000
+88,life_style,옐언니,4390000
+89,life_style,허팝Heopop,4260000
+90,life_style,진영민yeongmin,3620000
+91,life_style,승빈Seungbin,3240000
+92,life_style,랄랄ralral,1640000
+93,life_style,욘니와치애YonniandChiae,1620000
+94,life_style,DOJIN도진이,1620000
+95,life_style,박하사탕 박소연,61
+96,life_style,한살차이 [Hansal],1280000
+97,life_style,이라이라경 ravely,924000
+98,life_style,책읽기좋은날,920000
+99,life_style,하알라,857000
+100,life_style,석준이가해,573000
+101,life_style,미국아재 Mister American,527000
+102,life_style,쏘대장,522000
+103,life_style,나는미도,243000
+104,life_style,스마트한농부,226000
+105,movie,소맥거핀,8200000
+106,movie,미니특공대TV,8060000
+107,movie,지무비 : G Movie,3600000
+108,movie,총몇명,3520000
+109,movie,키에커,3050000
+110,movie,짤툰,2960000
+111,movie,필름에빠지다,473000
+112,movie,리뷰 MASTER,368000
+113,movie,무비톡,283000
+114,movie,잠깐무비,239000
+115,movie,김기린,141000
+116,movie,리뷰엉이: Owl's Review,1640000
+117,movie,차미툰,1550000
+118,celeb,Kim Miso,1460000
+119,celeb,THE 프리지아,557000
+120,celeb,김태원클라쓰,270000
+121,celeb,홍기종기 (이홍기),262000
+122,celeb,다비치 DAVICHI,262000
+123,celeb,하석진 HA SEOK JIN,233000
+124,celeb,시로 Siro,231000
+125,celeb,점핑머신 김혜선 jumpingmachine_official,128000
+126,celeb,나는 박미선 - PARKMISUN,117000
+127,car_auto,RoCars,2810000
+128,car_auto,TheStraightPipes,1750000
+129,car_auto,MEDCARS,1450000
+130,car_auto,모트라인 MOTline,700000
+131,car_auto,차업차득,691000
+132,car_auto,JPro CarVlog,654000
+133,car_auto,유미카,638000
+134,car_auto,남자들의 자동차 - 남차카페,272000
+135,car_auto,차박사TV,171000
+136,car_auto,카베이 CARBAY,140000
+137,economy,슈카월드,3430000
+138,economy,만두민 ManDooMiN,2930000
+139,economy,소비더머니,834000
+140,economy,집코노미,496000
+141,economy,주식단테_God of stock📈,517000
+142,economy,절약왕 정약용,509000
+143,economy,돈깡,509000
+144,economy,인생부동산,250000
+145,beauty,ssin 씬님,1440000
+146,beauty,kiu기우쌤,1560000
+147,beauty,RISABAE,2480000
+148,beauty,LULUPANG 루루팡,2260000
+149,beauty,Jooshica,2220000
+150,beauty,혜리,1900000
+151,beauty,효진조 Hyojin Cho,1870000
+152,beauty,오늘의 주우재,1210000
+153,beauty,뷰티포인트 Beauty Point,1190000
+154,beauty,깡스타일리스트,1250000
+155,beauty,leeanfilm리안,557000
+156,beauty,디테일 LookBook,556000
+157,beauty,차홍 CHAHONG,488000
+158,beauty,쩡대,388000
+159,beauty,관리는 하고 살자,334000
+160,education,꿀주부 Honeyjubu,2460000
+161,education,올리버쌤,2260000
+162,education,지식인사이드,2240000
+163,education,스터디언,1960000
+164,education,셜록현준,1310000
+165,education,미미미누,1660000
+166,education,지식해적단,1200000
+167,education,공부의신 강성태,974000
+168,education,입시덕후,776000
+169,education,지식한잔,619000
+170,education,친절한 대학 기초영어,565000
+171,education,주아쌤_소리튠영어,563000
+172,education,빡공시대TV,475000
+173,education,장동선의 궁금한 뇌,475000
+174,education,일상의인문학,235000
+175,entertainment,채널십오야,6620000
+176,entertainment,차린건 쥐뿔도 없지만,3950000
+177,entertainment,숏박스,3120000
+178,entertainment,피식대학Psick Univ,2840000
+179,entertainment,흔한남매,2840000
+180,entertainment,조재원,2070000
+181,entertainment,낄낄상회,2030000
+182,entertainment,보물섬,1920000
+183,entertainment,퇴경아 약먹자,1910000
+184,entertainment,희극인,651000
+185,entertainment,난쟁이성현,647000
+186,food_cooking,쏘영 Ssoyoung,11300000
+187,food_cooking,tzuyang쯔양,11000000
+188,food_cooking,백종원 PAIK JONG WON,6670000
+189,food_cooking,문복희 Eat with Boki,10100000
+190,food_cooking,하루한끼 one meal a day,4330000
+191,food_cooking,먹어볼래TryToEat,1820000
+192,food_cooking,입짧은햇님,1770000
+193,food_cooking,파뿌리,1730000
+194,food_cooking,히밥heebab,1650000
+195,food_cooking,요리왕비룡 Korean Food Cooking,2010000
+196,food_cooking,자취요리신 simple cooking,1980000
+197,food_cooking,양장금주부,1270000
+198,food_cooking,쿡피아 Cookpia,934000
+199,food_cooking,새벽식당,332000
+200,food_cooking,맛팩토리,212000

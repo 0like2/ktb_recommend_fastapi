@@ -14,7 +14,8 @@ class CreatorRecommendRequest(BaseModel):
         field_name = info.field_name
         if (field_name in ["channel_name", "channel_category"] and not value.strip()) or (
                 field_name == "subscribers" and value < 0):
-            raise HTTPException(status_code=422, detail="유효하지 않은 크리에이터 입력값입니다.")
+            raise HTTPException(status_code=422,
+                                detail={"code": 'INVALID_CREATOR_INPUT', "message": "유효하지 않은 크리에이터 입력값입니다."})
         return value
 
 
@@ -22,7 +23,7 @@ class ItemRecommendRequest(BaseModel):
     title: str
     item_category: str
     media_type: str
-    score: int
+    score: float
     item_content: str
 
     @field_validator("title", "item_category", "media_type", "score", "item_content")
@@ -30,8 +31,9 @@ class ItemRecommendRequest(BaseModel):
         field_name = info.field_name
         if (field_name in ["title", "item_category", "item_category"] and not value.strip()) or (
                 field_name == "score" and value < 0) or (
-                field_name == "media_type" and value.lower() not in ["short", "long"]):
-            raise HTTPException(status_code=422, detail="유효하지 않은 아이템 입력값입니다.")
+                field_name == "media_type" and value.lower() not in ["short_form", "long_form"]):
+            raise HTTPException(status_code=422,
+                                detail={"code": 'INVALID_ITEM_INPUT', "message": "유효하지 않은 아이템 입력값입니다."})
         return value
 
 
@@ -47,7 +49,7 @@ class RecommendItem(BaseModel):
     title: str
     item_category: str
     media_type: str
-    score: int
+    score: float
     item_content: str
 
 

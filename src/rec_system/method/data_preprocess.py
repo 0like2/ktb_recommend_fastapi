@@ -89,7 +89,7 @@ class Loader:
 
         # 데이터 전처리
         item_df['item_category'] = item_df['item_category'].astype("category").cat.codes
-        item_df['media_type'] = item_df['media_type'].map({'short': 0, 'long': 1})
+        item_df['media_type'] = item_df['media_type'].map({'short_form': 0, 'long_form': 1})
         item_df['target'] = item_df['score'].apply(lambda x: 1 if x >= 0.85 else 0)
         creator_df['channel_category'] = creator_df['channel_category'].astype("category").cat.codes
         creator_df['subscribers'] = creator_df['subscribers'].replace({',': ''}, regex=True).astype(int)

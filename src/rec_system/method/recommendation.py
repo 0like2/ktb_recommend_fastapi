@@ -155,7 +155,7 @@ if __name__ == "__main__":
     new_item_data = {
         'title': "바밤바를 뛰어넘는 밤 맛 과자가 있을까?",
         'item_category': 'entertainment',
-        'media_type': 'short',
+        'media_type': 'short-form',
         'score': 80,
         'item_content': '다양한 밤 맛 과자를 비교하며 맛과 질감을 리뷰하는 콘텐츠'
     }
