@@ -11,6 +11,28 @@ from src.rec_system.model_llm.model_llm4rec import (
 import os
 from dotenv import load_dotenv
 
+REVERSE_CATEGORY_MAPPING = {
+    "beauty": "KNOWHOW_STYLE",
+    "car_auto": "AUTO_TRANSPORT",
+    "celeb": "PEOPLE_BLOG",
+    "economy": "NEWS_POLITICS",
+    "education": "EDUCATION",
+    "entertainment": "ENTERTAINMENT",
+    "food_cooking": "FOOD_COOKING",
+    "game": "GAME",
+    "government": "NONPROFIT_SOCIAL",
+    "hobbies": "ETC",
+    "kids": "KIDS",
+    "life_style": "PEOPLE_BLOG",
+    "movie": "MOVIE_ANIMATION",
+    "music": "MUSIC",
+    "news": "NEWS_POLITICS",
+    "pet": "PETS_ANIMALS",
+    "sports_health": "SPORTS",
+    "tech": "TECH",
+    "travel": "TRAVEL_EVENTS",
+}
+
 
 class RecommendationService:
     def __init__(self):
@@ -157,6 +179,16 @@ class RecommendationService:
             key=lambda x: x["score"],
             reverse=True
         )
+
+        for result in sorted_results:
+            if "channel_category" in result:
+                result["channel_category"] = REVERSE_CATEGORY_MAPPING.get(
+                    result["channel_category"], "ETC"
+                )
+            if "item_category" in result:
+                result["item_category"] = REVERSE_CATEGORY_MAPPING.get(
+                    result["item_category"], "ETC"
+                )
 
         # 상위 10개 추천 반환
         return sorted_results[:10]
