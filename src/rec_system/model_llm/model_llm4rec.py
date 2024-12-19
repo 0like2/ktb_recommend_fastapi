@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from langchain.schema import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 import json, re
+import pickle
 
 
 def is_item_data(data):
@@ -45,23 +46,11 @@ def load_data(creator_path, item_path):
 
 # Stage1
 # 그래프 생성 함수
-def generate_graph(creators_df, items_df, embedder):
-    # Create embeddings f
-    creator_embeddings = [embedder.get_text_embedding(text) for text in creators_df['channel_category']]
-    item_embeddings = [embedder.get_text_embedding(text) for text in items_df['item_category']]
-    similarity_matrix = cosine_similarity(creator_embeddings, item_embeddings)
-
-    # Generate pseudo graph connections
-    connections = {}
-    for i, creator in creators_df.iterrows():
-        creator_id = creator['creator_id']
-        connections[creator_id] = {"direct": [], "indirect": []}
-        for j, item in items_df.iterrows():
-            if similarity_matrix[i, j] > 0.6:  # Direct connection threshold
-                connections[creator_id]["direct"].append(item['item_id'])
-            elif similarity_matrix[i, j] > 0.4:  # Indirect connection threshold
-                connections[creator_id]["indirect"].append(item['item_id'])
-    return connections
+def generate_graph(cache_dir="src/rec_system/model_lightgcn/input"):
+    graph_file = os.path.join(cache_dir, "connections.pkl")
+    with open(graph_file, 'rb') as f:
+        connections = pickle.load(f)
+        return connections
 
 
 # Cold-start 후보군 생성 함수
@@ -134,7 +123,7 @@ def candidates_for_user(user_data, connections, items_df, embedder, top_k=20):
 
 # Stage2
 class LLMCandidateRanker:
-    def __init__(self, api_key, model_name="gpt-4", temperature=0.5):
+    def __init__(self, api_key, model_name="gpt-3.5-turbo", temperature=0.5):
         self.chat_model = ChatOpenAI(
             model=model_name,
             temperature=temperature,
@@ -260,7 +249,7 @@ def generate_candidates(new_data, creators_df, items_df, embedder, connections, 
     return candidates
 
 
-def rank_candidates_with_llm(new_data, ranked_candidates, connections, llm_ranker, id_map, is_item, top_k, creators_df,
+def rank_candidates_with_llm(new_data, ranked_candidates, llm_ranker, id_map, is_item, top_k, creators_df,
                              items_df):
     candidates_str = "\n".join([
         f"({chr(65 + idx)}) {candidate.get('channel_name', 'N/A') if is_item else candidate.get('title', 'N/A')}: "
@@ -269,20 +258,12 @@ def rank_candidates_with_llm(new_data, ranked_candidates, connections, llm_ranke
         for idx, candidate in enumerate(ranked_candidates)
     ])
 
-    graph_context = connections.get(new_data['item_id' if is_item else 'creator_id'], {})
-    if not graph_context:
-        graph_context = {"direct": [], "indirect": []}
-
     prompt = f"""
     ### Instruction:
     Based on the provided information, rank the following candidates in order of preference and return the results in a structured JSON format.
 
     ### New Data:
     {new_data}
-
-    ### Graph Context:
-    Direct Connections: {graph_context.get('direct', [])}
-    Indirect Connections: {graph_context.get('indirect', [])}
 
     ### Candidates:
     {candidates_str}
@@ -378,7 +359,7 @@ def recommend_for_new_creator(new_creator_data, creators_df, items_df, embedder,
                                      is_item=False)
     ranked_candidates, id_map = llm_ranker.re_rank(new_creator_data, candidates, connections, is_item=False)
     final_recommendations = rank_candidates_with_llm(
-        new_creator_data, ranked_candidates, connections, llm_ranker, id_map, is_item=False, top_k=top_k,
+        new_creator_data, ranked_candidates, llm_ranker, id_map, is_item=False, top_k=top_k,
         creators_df=creators_df, items_df=items_df
     )
 
@@ -403,7 +384,7 @@ def recommend_for_new_item(new_item_data, creators_df, items_df, embedder, conne
     candidates = generate_candidates(new_item_data, creators_df, items_df, embedder, connections, top_k, is_item=True)
     ranked_candidates, id_map = llm_ranker.re_rank(new_item_data, candidates, connections, is_item=True)
     final_recommendations = rank_candidates_with_llm(
-        new_item_data, ranked_candidates, connections, llm_ranker, id_map, is_item=True, top_k=top_k,
+        new_item_data, ranked_candidates, llm_ranker, id_map, is_item=True, top_k=top_k,
         creators_df=creators_df, items_df=items_df
     )
 
@@ -461,12 +442,12 @@ def main():
     new_item_data['item_id'] = max_item_id + 1
 
     # Step 5: Generate graph
-    connections = generate_graph(creators_df, items_df, embedder)
+    connections = generate_graph()
 
     # Step 6: Initialize LLM Candidate Ranker
     is_item = is_item_data(new_creator_data)
     print(f"\n{'Item' if is_item else 'User'} data detected. Starting LLM re-ranking...")
-    ranker = LLMCandidateRanker(api_key=api_key, model_name="gpt-4", temperature=0.7)
+    ranker = LLMCandidateRanker(api_key=api_key, model_name="gpt-3.5-turbo", temperature=0.5)
 
     # Step 7: Generate recommendations
     print("\n### Recommendations for New Creator ###")
